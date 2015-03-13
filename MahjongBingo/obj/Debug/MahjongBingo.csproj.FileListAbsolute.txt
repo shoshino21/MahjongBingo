@@ -1,0 +1,9 @@
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\bin\Debug\MahjongBingo.exe.config
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\bin\Debug\MahjongBingo.exe
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\bin\Debug\MahjongBingo.pdb
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.csprojResolveAssemblyReference.cache
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.MainForm.resources
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.Properties.Resources.resources
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.csproj.GenerateResource.Cache
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.exe
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.pdb

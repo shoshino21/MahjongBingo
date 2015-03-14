@@ -11,6 +11,7 @@ using System.Windows.Forms;
 namespace MahjongBingo {
     public partial class MainForm : Form {
         private Logic _logic;
+        private PictureBox[] selectionPics;
 
         public static readonly int PAI_AMOUNT = 36;
         private readonly int PAI_WIDTH = 36;
@@ -25,46 +26,49 @@ namespace MahjongBingo {
             InitializeComponent();
 
             _logic = new Logic();
+            //Graphics g = CreateGraphics();
+            //DrawPai(CreateGraphics());
+
+            //建立選擇區
+            selectionPics = new PictureBox[PAI_AMOUNT];
+            for (int i = 0; i < PAI_AMOUNT; i++) {
+                selectionPics[i] = new PictureBox();
+                selectionPics[i].Image = Properties.Resources.up1;
+                selectionPics[i].Location = new Point(PAI_WIDTH * (i % 12) + 360, PAI_HEIGHT * (i / 12) + 300);
+                selectionPics[i].Size = new Size(PAI_WIDTH, PAI_HEIGHT);
+                selectionPics[i].Parent = this;
+                selectionPics[i].Tag = _logic.Selection[i];
+
+                selectionPics[i].MouseUp += (o, e) => {
+                    PictureBox picSelected = o as PictureBox;
+                    picSelected.Image = GetPaiImage((Pai)picSelected.Tag, 1);
+
+                    //找出盤面上的對應牌
+                    for (int idx = 0; idx < PAI_AMOUNT; idx++) {
+                        if (_logic.Board[idx] == (Pai)picSelected.Tag) {
+                            _logic.IsHit[idx] = 1;
+                            Invalidate();   //重繪盤面
+                            break;
+                        }
+                    }
+                    //CheckForLine();
+
+                };
+            }
         }
 
+
         //畫面繪製
-        //TODO:限制重繪範圍
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
-            //Graphics g = e.Graphics;
-            DrawBaseline(e.Graphics);
-            DrawPai(e.Graphics);
-            //#region 盤面底線繪製
-            //pen = new Pen(Color.Black, 3);  //設定盤面底線顏色與粗細
-            ////畫橫線
-            //for (int i = 0; i < BOARD_LENGTH_BY_PAI; i++) {
-            //    point1.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-            //    point1.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * i+MARGIN_TOP;
-            //    point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) +MARGIN_LEFT;
-            //    point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * i + MARGIN_TOP;
-            //    g.DrawLine(pen, point1, point2);
-            //}
-            ////畫縱線
-            //for (int i = 0; i < BOARD_LENGTH_BY_PAI; i++) {
-            //    point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * i + MARGIN_LEFT;
-            //    point1.Y = PAI_HEIGHT / 2+MARGIN_TOP;
-            //    point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * i + MARGIN_LEFT;
-            //    point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1)+MARGIN_TOP;
-            //    g.DrawLine(pen, point1, point2);
-            //}
-            ////畫左上右下線
-            //point1.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-            //point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
-            //point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
-            //point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
-            //g.DrawLine(pen, point1, point2);
-            ////畫右上左下線
-            //point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
-            //point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
-            //point2.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-            //point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
-            //g.DrawLine(pen, point1, point2);
-            //#endregion
+            //設定畫面重繪範圍
+            int repaintTop = MARGIN_TOP + (PAI_HEIGHT + INTERVAL_Y) * BOARD_LENGTH_BY_PAI;
+            int repaintLeft = MARGIN_LEFT + (PAI_WIDTH + INTERVAL_X) * BOARD_LENGTH_BY_PAI;
+
+            if (e.ClipRectangle.Top < repaintTop && e.ClipRectangle.Left < repaintLeft) {
+                DrawBaseline(e.Graphics);
+                DrawPai(e.Graphics);
+            }
         }
 
         //畫盤面底線
@@ -103,76 +107,124 @@ namespace MahjongBingo {
             g.DrawLine(pen, point1, point2);
         }
 
-        //畫盤面的牌
+        //畫盤面上的牌
         private void DrawPai(Graphics g) {
+            //Bitmap bmp;
             Point point = new Point();
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 point.X = (PAI_WIDTH + INTERVAL_X) * (i % BOARD_LENGTH_BY_PAI) + MARGIN_LEFT;
                 point.Y = (PAI_HEIGHT + INTERVAL_Y) * (i / BOARD_LENGTH_BY_PAI) + MARGIN_TOP;
-                Bitmap bmp = new Bitmap(GetPaiImage(_logic.Board[i]));
+                Bitmap bmp = new Bitmap(GetPaiImage(_logic.Board[i], _logic.IsHit[i]));
+                //if (_logic.IsHit[i] == 0) {
+                //    bmp = ToGrayscale(bmp);
+                //}
                 g.DrawImage(bmp, point);
+                bmp.Dispose();
             }
             //Bitmap bmp1 = new Bitmap(Properties.Resources.kz2);
             //g.DrawImage(bmp1, 50, 50);
         }
 
         //取得指定牌的圖片，wz:萬 pz:餅 sz:索 kz:四風 sg:三元 fa:花
-        private Image GetPaiImage(Pai pai) {
+        private Image GetPaiImage(Pai pai, int isHit) {
             Image img;
-            switch (pai) {
-                case Pai.wz1: img = Properties.Resources.wz1; break;
-                case Pai.wz2: img = Properties.Resources.wz2; break;
-                case Pai.wz3: img = Properties.Resources.wz3; break;
-                case Pai.wz4: img = Properties.Resources.wz4; break;
-                case Pai.wz5: img = Properties.Resources.wz5; break;
-                case Pai.wz6: img = Properties.Resources.wz6; break;
-                case Pai.wz7: img = Properties.Resources.wz7; break;
-                case Pai.wz8: img = Properties.Resources.wz8; break;
-                case Pai.wz9: img = Properties.Resources.wz9; break;
-                case Pai.pz1: img = Properties.Resources.pz1; break;
-                case Pai.pz2: img = Properties.Resources.pz2; break;
-                case Pai.pz3: img = Properties.Resources.pz3; break;
-                case Pai.pz4: img = Properties.Resources.pz4; break;
-                case Pai.pz5: img = Properties.Resources.pz5; break;
-                case Pai.pz6: img = Properties.Resources.pz6; break;
-                case Pai.pz7: img = Properties.Resources.pz7; break;
-                case Pai.pz8: img = Properties.Resources.pz8; break;
-                case Pai.pz9: img = Properties.Resources.pz9; break;
-                case Pai.sz1: img = Properties.Resources.sz1; break;
-                case Pai.sz2: img = Properties.Resources.sz2; break;
-                case Pai.sz3: img = Properties.Resources.sz3; break;
-                case Pai.sz4: img = Properties.Resources.sz4; break;
-                case Pai.sz5: img = Properties.Resources.sz5; break;
-                case Pai.sz6: img = Properties.Resources.sz6; break;
-                case Pai.sz7: img = Properties.Resources.sz7; break;
-                case Pai.sz8: img = Properties.Resources.sz8; break;
-                case Pai.sz9: img = Properties.Resources.sz9; break;
-                case Pai.kz1: img = Properties.Resources.kz1; break;
-                case Pai.kz2: img = Properties.Resources.kz2; break;
-                case Pai.kz3: img = Properties.Resources.kz3; break;
-                case Pai.kz4: img = Properties.Resources.kz4; break;
-                case Pai.sg1: img = Properties.Resources.sg1; break;
-                case Pai.sg2: img = Properties.Resources.sg2; break;
-                case Pai.sg3: img = Properties.Resources.sg3; break;
-                case Pai.fa1: img = Properties.Resources.fa1; break;
-                case Pai.fa2: img = Properties.Resources.fa2; break;
-                default: img = null; break;
+            //牌有被點開
+            if (isHit == 1) {
+                switch (pai) {
+                    case Pai.wz1: img = Properties.Resources.wz1; break;
+                    case Pai.wz2: img = Properties.Resources.wz2; break;
+                    case Pai.wz3: img = Properties.Resources.wz3; break;
+                    case Pai.wz4: img = Properties.Resources.wz4; break;
+                    case Pai.wz5: img = Properties.Resources.wz5; break;
+                    case Pai.wz6: img = Properties.Resources.wz6; break;
+                    case Pai.wz7: img = Properties.Resources.wz7; break;
+                    case Pai.wz8: img = Properties.Resources.wz8; break;
+                    case Pai.wz9: img = Properties.Resources.wz9; break;
+                    case Pai.pz1: img = Properties.Resources.pz1; break;
+                    case Pai.pz2: img = Properties.Resources.pz2; break;
+                    case Pai.pz3: img = Properties.Resources.pz3; break;
+                    case Pai.pz4: img = Properties.Resources.pz4; break;
+                    case Pai.pz5: img = Properties.Resources.pz5; break;
+                    case Pai.pz6: img = Properties.Resources.pz6; break;
+                    case Pai.pz7: img = Properties.Resources.pz7; break;
+                    case Pai.pz8: img = Properties.Resources.pz8; break;
+                    case Pai.pz9: img = Properties.Resources.pz9; break;
+                    case Pai.sz1: img = Properties.Resources.sz1; break;
+                    case Pai.sz2: img = Properties.Resources.sz2; break;
+                    case Pai.sz3: img = Properties.Resources.sz3; break;
+                    case Pai.sz4: img = Properties.Resources.sz4; break;
+                    case Pai.sz5: img = Properties.Resources.sz5; break;
+                    case Pai.sz6: img = Properties.Resources.sz6; break;
+                    case Pai.sz7: img = Properties.Resources.sz7; break;
+                    case Pai.sz8: img = Properties.Resources.sz8; break;
+                    case Pai.sz9: img = Properties.Resources.sz9; break;
+                    case Pai.kz1: img = Properties.Resources.kz1; break;
+                    case Pai.kz2: img = Properties.Resources.kz2; break;
+                    case Pai.kz3: img = Properties.Resources.kz3; break;
+                    case Pai.kz4: img = Properties.Resources.kz4; break;
+                    case Pai.sg1: img = Properties.Resources.sg1; break;
+                    case Pai.sg2: img = Properties.Resources.sg2; break;
+                    case Pai.sg3: img = Properties.Resources.sg3; break;
+                    case Pai.fa1: img = Properties.Resources.fa1; break;
+                    case Pai.fa2: img = Properties.Resources.fa2; break;
+                    default: img = null; break;
+                }
+            } else {
+                switch (pai) {
+                    case Pai.wz1: img = Properties.Resources.wz1_d; break;
+                    case Pai.wz2: img = Properties.Resources.wz2_d; break;
+                    case Pai.wz3: img = Properties.Resources.wz3_d; break;
+                    case Pai.wz4: img = Properties.Resources.wz4_d; break;
+                    case Pai.wz5: img = Properties.Resources.wz5_d; break;
+                    case Pai.wz6: img = Properties.Resources.wz6_d; break;
+                    case Pai.wz7: img = Properties.Resources.wz7_d; break;
+                    case Pai.wz8: img = Properties.Resources.wz8_d; break;
+                    case Pai.wz9: img = Properties.Resources.wz9_d; break;
+                    case Pai.pz1: img = Properties.Resources.pz1_d; break;
+                    case Pai.pz2: img = Properties.Resources.pz2_d; break;
+                    case Pai.pz3: img = Properties.Resources.pz3_d; break;
+                    case Pai.pz4: img = Properties.Resources.pz4_d; break;
+                    case Pai.pz5: img = Properties.Resources.pz5_d; break;
+                    case Pai.pz6: img = Properties.Resources.pz6_d; break;
+                    case Pai.pz7: img = Properties.Resources.pz7_d; break;
+                    case Pai.pz8: img = Properties.Resources.pz8_d; break;
+                    case Pai.pz9: img = Properties.Resources.pz9_d; break;
+                    case Pai.sz1: img = Properties.Resources.sz1_d; break;
+                    case Pai.sz2: img = Properties.Resources.sz2_d; break;
+                    case Pai.sz3: img = Properties.Resources.sz3_d; break;
+                    case Pai.sz4: img = Properties.Resources.sz4_d; break;
+                    case Pai.sz5: img = Properties.Resources.sz5_d; break;
+                    case Pai.sz6: img = Properties.Resources.sz6_d; break;
+                    case Pai.sz7: img = Properties.Resources.sz7_d; break;
+                    case Pai.sz8: img = Properties.Resources.sz8_d; break;
+                    case Pai.sz9: img = Properties.Resources.sz9_d; break;
+                    case Pai.kz1: img = Properties.Resources.kz1_d; break;
+                    case Pai.kz2: img = Properties.Resources.kz2_d; break;
+                    case Pai.kz3: img = Properties.Resources.kz3_d; break;
+                    case Pai.kz4: img = Properties.Resources.kz4_d; break;
+                    case Pai.sg1: img = Properties.Resources.sg1_d; break;
+                    case Pai.sg2: img = Properties.Resources.sg2_d; break;
+                    case Pai.sg3: img = Properties.Resources.sg3_d; break;
+                    case Pai.fa1: img = Properties.Resources.fa1_d; break;
+                    case Pai.fa2: img = Properties.Resources.fa2_d; break;
+                    default: img = null; break;
+                }
             }
             return img;
         }
 
-        //將圖片轉灰階用
-        private Bitmap ToGrayscale(Bitmap oldBmp) {
-            Bitmap newBmp = new Bitmap(oldBmp.Width, oldBmp.Height);
-            for (int w = 1; w < oldBmp.Width; w++) {
-                for (int h = 1; h < oldBmp.Height; h++) {
-                    Color pixel = oldBmp.GetPixel(w, h);
-                    int newColor = (pixel.R + pixel.G + pixel.B) / 3;
-                    newBmp.SetPixel(w, h, Color.FromArgb(newColor, newColor, newColor));
-                }
-            }
-            return newBmp;
-        }
+        ////圖片轉灰階
+        //private Bitmap ToGrayscale(Bitmap oldBmp) {
+        //    Bitmap newBmp = new Bitmap(oldBmp.Width, oldBmp.Height);
+        //    for (int w = 1; w < oldBmp.Width; w++) {
+        //        for (int h = 1; h < oldBmp.Height; h++) {
+        //            Color pixel = oldBmp.GetPixel(w, h);
+        //            int newColor = (pixel.R + pixel.G + pixel.B) / 3;
+        //            newBmp.SetPixel(w, h, Color.FromArgb(newColor, newColor, newColor));
+        //        }
+        //    }
+        //    return newBmp;
+        //}
         #region Recycled
 
         ////牌種類列舉，wz:萬 pz:餅 sz:索 kz:四風 sg:三元 fa:花

@@ -19,13 +19,13 @@ namespace MahjongBingo {
             IsHit = new int[PAI_AMOUNT];
 
             for (int i = 0; i < PAI_AMOUNT; i++) {
-                Board.Add((Pai)i + 1);
-                Selection.Add((Pai)i + 1);
+                Board.Add((Pai)i);
+                Selection.Add((Pai)i);
                 IsHit[i] = 0;
             }
 
-            Shuffle(Board);
-            Shuffle(Selection);
+            Board = Shuffle(Board);
+            Selection = Shuffle(Selection);
         }
 
         //洗牌

@@ -191,6 +191,114 @@
   <ItemGroup>
     <None Include="Resources\wz9.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fa1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fa2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kz1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kz2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kz3_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kz4_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz3_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz4_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz5_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz6_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz7_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz8_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pz9_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sg1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sg2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sg3_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz3_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz4_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz5_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz6_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz7_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz8_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sz9_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz1_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz2_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz3_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz4_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz5_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz6_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz7_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz8_d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wz9_d.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

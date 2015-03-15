@@ -1,8 +1,7 @@
 # MahjongBingo
 <a href="https://github.com/shoshino21/MahjongBingo/blob/master/MahjongBingo.rar?raw=true">下載 (.rar)</a>
 
-應某人要求寫的麻將賓果 (夜市常看到那種)，很難中所以不要太care  
-據說開15張牌就連線的機率只有3.5%，超坑 - -  
+應某人要求寫的麻將賓果 (夜市常看到那種)，有點難中所以不要太care
 
 牌畫來源 : http://sozai.7gates.net/docs/mahjong01/  
 (花牌自己加的)  

@@ -11,9 +11,11 @@ using System.Windows.Forms;
 namespace MahjongBingo {
     public partial class MainForm : Form {
         private Logic _logic;
-        private PictureBox[] selectionPics;
+        private PictureBox[] _selectionPics;
 
         public static readonly int PAI_AMOUNT = 36;
+        public static readonly int SELECT_COUNT_INIT = 15;
+        public static readonly int SELECT_COUNT_EXTEND = 5;
         private readonly int PAI_WIDTH = 36;
         private readonly int PAI_HEIGHT = 54;
         private readonly int BOARD_LENGTH_BY_PAI = 6;
@@ -30,33 +32,32 @@ namespace MahjongBingo {
             //DrawPai(CreateGraphics());
 
             //建立選擇區
-            selectionPics = new PictureBox[PAI_AMOUNT];
+            _selectionPics = new PictureBox[PAI_AMOUNT];
             for (int i = 0; i < PAI_AMOUNT; i++) {
-                selectionPics[i] = new PictureBox();
-                selectionPics[i].Image = Properties.Resources.up1;
-                selectionPics[i].Location = new Point(PAI_WIDTH * (i % 12) + 360, PAI_HEIGHT * (i / 12) + 300);
-                selectionPics[i].Size = new Size(PAI_WIDTH, PAI_HEIGHT);
-                selectionPics[i].Parent = this;
-                selectionPics[i].Tag = _logic.Selection[i];
+                _selectionPics[i] = new PictureBox();
+                _selectionPics[i].Image = Properties.Resources.up1;
+                _selectionPics[i].Location = new Point(PAI_WIDTH * (i % 12) + 360, PAI_HEIGHT * (i / 12) + 300);
+                _selectionPics[i].Size = new Size(PAI_WIDTH, PAI_HEIGHT);
+                _selectionPics[i].Parent = this;
+                _selectionPics[i].Tag = _logic.Selection[i];
 
-                selectionPics[i].MouseUp += (o, e) => {
+                _selectionPics[i].MouseUp += (o, e) => {
                     PictureBox picSelected = o as PictureBox;
                     picSelected.Image = GetPaiImage((Pai)picSelected.Tag, 1);
 
                     //找出盤面上的對應牌
                     for (int idx = 0; idx < PAI_AMOUNT; idx++) {
-                        if (_logic.Board[idx] == (Pai)picSelected.Tag) {
-                            _logic.IsHit[idx] = 1;
+                        if (_logic.Board[idx] == (Pai)picSelected.Tag && _logic.IsOpened[idx] == 0) {
+                            _logic.OpenPai(idx);
+                            //_logic.RemainingCount--;
+                            //MessageBox.Show(_logic.RemainingCount.ToString());
                             Invalidate();   //重繪盤面
                             break;
                         }
                     }
-                    //CheckForLine();
-
                 };
             }
         }
-
 
         //畫面繪製
         protected override void OnPaint(PaintEventArgs e) {
@@ -66,45 +67,63 @@ namespace MahjongBingo {
             int repaintLeft = MARGIN_LEFT + (PAI_WIDTH + INTERVAL_X) * BOARD_LENGTH_BY_PAI;
 
             if (e.ClipRectangle.Top < repaintTop && e.ClipRectangle.Left < repaintLeft) {
-                DrawBaseline(e.Graphics);
+                DrawBaseLine(e.Graphics);
                 DrawPai(e.Graphics);
+                DrawBingoLine(e.Graphics);
             }
         }
 
-        //畫盤面底線
-        private void DrawBaseline(Graphics g) {
-            Pen pen = new Pen(Color.Black, 3);  //設定盤面底線顏色與粗細
+        //畫線
+        private void DrawLine(Graphics g, LineType lineType, Pen pen) {
             Point point1 = new Point();
             Point point2 = new Point();
-
             //畫橫線
-            for (int i = 0; i < BOARD_LENGTH_BY_PAI; i++) {
+            if ((int)lineType >= 0 && (int)lineType <= 5) {
+                int offset = (int)lineType;
                 point1.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-                point1.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * i + MARGIN_TOP;
+                point1.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * offset + MARGIN_TOP;
                 point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
-                point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * i + MARGIN_TOP;
-                g.DrawLine(pen, point1, point2);
+                point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * offset + MARGIN_TOP;
             }
-            //畫縱線
-            for (int i = 0; i < BOARD_LENGTH_BY_PAI; i++) {
-                point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * i + MARGIN_LEFT;
+                //畫縱線
+            else if ((int)lineType >= 6 && (int)lineType <= 11) {
+                int offset = (int)lineType - 6;
+                point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * offset + MARGIN_LEFT;
                 point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
-                point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * i + MARGIN_LEFT;
+                point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * offset + MARGIN_LEFT;
                 point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
-                g.DrawLine(pen, point1, point2);
             }
-            //畫左上右下線
-            point1.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-            point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
-            point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
-            point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
+                //畫斜線
+            else if (lineType == LineType.slash) {
+                point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
+                point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
+                point2.X = PAI_WIDTH / 2 + MARGIN_LEFT;
+                point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
+            } else if (lineType == LineType.backslash) {
+                point1.X = PAI_WIDTH / 2 + MARGIN_LEFT;
+                point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
+                point2.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
+                point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
+            }
             g.DrawLine(pen, point1, point2);
-            //畫右上左下線
-            point1.X = PAI_WIDTH / 2 + (PAI_WIDTH + INTERVAL_X) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_LEFT;
-            point1.Y = PAI_HEIGHT / 2 + MARGIN_TOP;
-            point2.X = PAI_WIDTH / 2 + MARGIN_LEFT;
-            point2.Y = PAI_HEIGHT / 2 + (PAI_HEIGHT + INTERVAL_Y) * (BOARD_LENGTH_BY_PAI - 1) + MARGIN_TOP;
-            g.DrawLine(pen, point1, point2);
+        }
+
+        //畫盤面底線
+        private void DrawBaseLine(Graphics g) {
+            Pen pen = new Pen(Color.Black, 3);
+            for (int i = 0; i < 14; i++) {
+                DrawLine(g, (LineType)i, pen);
+            }
+        }
+
+        //畫賓果線
+        private void DrawBingoLine(Graphics g) {
+            Pen pen = new Pen(Color.Red, 3);
+            for (int i = 0; i < 14; i++) {
+                if (_logic.CheckForLine((LineType)i) == 6) {
+                    DrawLine(g, (LineType)i, pen);
+                }
+            }
         }
 
         //畫盤面上的牌
@@ -114,7 +133,7 @@ namespace MahjongBingo {
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 point.X = (PAI_WIDTH + INTERVAL_X) * (i % BOARD_LENGTH_BY_PAI) + MARGIN_LEFT;
                 point.Y = (PAI_HEIGHT + INTERVAL_Y) * (i / BOARD_LENGTH_BY_PAI) + MARGIN_TOP;
-                Bitmap bmp = new Bitmap(GetPaiImage(_logic.Board[i], _logic.IsHit[i]));
+                Bitmap bmp = new Bitmap(GetPaiImage(_logic.Board[i], _logic.IsOpened[i]));
                 //if (_logic.IsHit[i] == 0) {
                 //    bmp = ToGrayscale(bmp);
                 //}
@@ -126,10 +145,10 @@ namespace MahjongBingo {
         }
 
         //取得指定牌的圖片，wz:萬 pz:餅 sz:索 kz:四風 sg:三元 fa:花
-        private Image GetPaiImage(Pai pai, int isHit) {
+        private Image GetPaiImage(Pai pai, int isOpened) {
             Image img;
             //牌有被點開
-            if (isHit == 1) {
+            if (isOpened == 1) {
                 switch (pai) {
                     case Pai.wz1: img = Properties.Resources.wz1; break;
                     case Pai.wz2: img = Properties.Resources.wz2; break;

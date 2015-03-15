@@ -28,6 +28,7 @@
             this.lblMessage = new System.Windows.Forms.Label();
             this.btnResetGame = new System.Windows.Forms.Button();
             this.btnResetBoard = new System.Windows.Forms.Button();
+            this.btnChangeDiff = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,6 +47,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(55, 21);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // lblMessage
             // 
@@ -60,7 +62,7 @@
             // btnResetGame
             // 
             this.btnResetGame.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnResetGame.Location = new System.Drawing.Point(407, 75);
+            this.btnResetGame.Location = new System.Drawing.Point(360, 71);
             this.btnResetGame.Name = "btnResetGame";
             this.btnResetGame.Size = new System.Drawing.Size(172, 62);
             this.btnResetGame.TabIndex = 2;
@@ -71,7 +73,7 @@
             // btnResetBoard
             // 
             this.btnResetBoard.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnResetBoard.Location = new System.Drawing.Point(606, 75);
+            this.btnResetBoard.Location = new System.Drawing.Point(558, 71);
             this.btnResetBoard.Name = "btnResetBoard";
             this.btnResetBoard.Size = new System.Drawing.Size(172, 62);
             this.btnResetBoard.TabIndex = 2;
@@ -79,12 +81,25 @@
             this.btnResetBoard.UseVisualStyleBackColor = true;
             this.btnResetBoard.Click += new System.EventHandler(this.btnResetBoard_Click);
             // 
+            // btnChangeDiff
+            // 
+            this.btnChangeDiff.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.btnChangeDiff.Location = new System.Drawing.Point(558, 191);
+            this.btnChangeDiff.Name = "btnChangeDiff";
+            this.btnChangeDiff.Size = new System.Drawing.Size(172, 62);
+            this.btnChangeDiff.TabIndex = 2;
+            this.btnChangeDiff.Text = "難死了啦!!";
+            this.btnChangeDiff.UseVisualStyleBackColor = true;
+            this.btnChangeDiff.Visible = false;
+            this.btnChangeDiff.Click += new System.EventHandler(this.btnChangeDiff_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MediumAquamarine;
             this.ClientSize = new System.Drawing.Size(833, 513);
+            this.Controls.Add(this.btnChangeDiff);
             this.Controls.Add(this.btnResetBoard);
             this.Controls.Add(this.btnResetGame);
             this.Controls.Add(this.lblMessage);
@@ -109,6 +124,7 @@
         private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.Button btnResetGame;
         private System.Windows.Forms.Button btnResetBoard;
+        private System.Windows.Forms.Button btnChangeDiff;
 
 
 

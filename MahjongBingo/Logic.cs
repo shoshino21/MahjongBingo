@@ -18,12 +18,16 @@ namespace MahjongBingo {
         public List<Pai> Selection { get; private set; }    //選擇區
         public int[] IsOpened { get; private set; }         //是否被點開
         public bool IsExtended { get; private set; }        //是否已延長
-        public string Message { get; private set; }      //顯示用文字訊息
+        public string Message { get; private set; }         //顯示用文字訊息
+        public int GameOverCounter { get; private set; }    //紀錄GameOver次數 (過一定次數show修改難度鈕)
+        public int SelectCountCustom { get; set; }          //自訂牌數
 
         public Logic() {
             Board = new List<Pai>();
             Selection = new List<Pai>();
             IsOpened = new int[PAI_AMOUNT];
+            SelectCountCustom = SELECT_COUNT_INIT;      //牌數先訂為原始設定
+            GameOverCounter = 0;
 
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 Board.Add((Pai)i);
@@ -41,7 +45,7 @@ namespace MahjongBingo {
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 IsOpened[i] = 0;
             }
-            _remainingCount = SELECT_COUNT_INIT;
+            _remainingCount = SelectCountCustom;
             Message = "還有 " + _remainingCount + " 張";
         }
 
@@ -91,6 +95,7 @@ namespace MahjongBingo {
             } else {
                 Message = "你GG惹~";
                 isGameOver = true;
+                GameOverCounter++;
             }
             return isGameOver;
         }

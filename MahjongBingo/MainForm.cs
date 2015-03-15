@@ -12,6 +12,7 @@ namespace MahjongBingo {
     public partial class MainForm : Form {
         private Logic _logic;
         private PictureBox[] _selectionPics;
+        private AboutForm _aboutForm;
 
         public static readonly int PAI_AMOUNT = 36;             //總牌數
         public static readonly int SELECT_COUNT_INIT = 15;      //初始牌數
@@ -28,6 +29,7 @@ namespace MahjongBingo {
             InitializeComponent();
 
             _logic = new Logic();
+            _aboutForm = new AboutForm();
             lblMessage.Text = _logic.Message;
 
             //建立選擇區
@@ -48,8 +50,14 @@ namespace MahjongBingo {
                     for (int idx = 0; idx < PAI_AMOUNT; idx++) {
                         if (_logic.Board[idx] == (Pai)picSelected.Tag && _logic.IsOpened[idx] == 0) {
                             bool isGameOver = _logic.OpenPai(idx);
-                            lblMessage.Text = _logic.Message;        //更新文字訊息
-                            if (isGameOver) SwitchSelection(false);     //若遊戲結束則停用選擇區
+                            //更新文字訊息
+                            lblMessage.Text = _logic.Message;
+                            //若遊戲結束則停用選擇區
+                            if (isGameOver) SwitchSelection(false);
+                            //若Gameover太多次則顯示調整難度按鈕
+                            if (_logic.GameOverCounter >= 3 && _logic.SelectCountCustom == SELECT_COUNT_INIT) {
+                                btnChangeDiff.Visible = true;
+                            }
                             break;
                         }
                     }
@@ -257,9 +265,9 @@ namespace MahjongBingo {
                 _selectionPics[i].Tag = _logic.Selection[i];
                 _selectionPics[i].Image = Properties.Resources.up1;
             }
-            SwitchSelection(true);                  //啟用選擇區
-            lblMessage.Text = _logic.Message;    //更新文字訊息
-            Invalidate();                           //重繪盤面
+            SwitchSelection(true);              //啟用選擇區
+            lblMessage.Text = _logic.Message;   //更新文字訊息
+            Invalidate();                       //重繪盤面
         }
 
         //重置遊戲鈕
@@ -270,6 +278,21 @@ namespace MahjongBingo {
         //重置盤面鈕
         private void btnResetBoard_Click(object sender, EventArgs e) {
             ResetGame(true);
+        }
+
+        //修改難度用
+        private void btnChangeDiff_Click(object sender, EventArgs e) {
+            int customCount = 20;
+            _logic.SelectCountCustom = customCount;
+            MessageBox.Show("給你" + customCount + "張總能過了吧!");
+
+            ResetGame(false);
+            btnChangeDiff.Visible = false;
+        }
+
+        //AboutForm
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            _aboutForm.ShowDialog();
         }
     }
 }

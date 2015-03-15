@@ -7,3 +7,4 @@ F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\ob
 F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.csproj.GenerateResource.Cache
 F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.exe
 F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.pdb
+F:\@Documents\!!GoogleCloud\Dropbox\@Coding\!GitHub\MahjongBingo\MahjongBingo\obj\Debug\MahjongBingo.AboutForm.resources

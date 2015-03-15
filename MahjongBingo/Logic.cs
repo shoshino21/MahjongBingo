@@ -7,35 +7,42 @@ using System.Windows.Forms;
 
 namespace MahjongBingo {
     class Logic {
-        private readonly int PAI_AMOUNT = MainForm.PAI_AMOUNT;       //總牌數
-        private readonly int SELECT_COUNT_INIT = MainForm.SELECT_COUNT_INIT;
-        private readonly int SELECT_COUNT_EXTEND = MainForm.SELECT_COUNT_EXTEND;
+        private readonly int PAI_AMOUNT = MainForm.PAI_AMOUNT;                      //總牌數
+        private readonly int SELECT_COUNT_INIT = MainForm.SELECT_COUNT_INIT;        //初始牌數
+        private readonly int SELECT_COUNT_EXTEND = MainForm.SELECT_COUNT_EXTEND;    //延長後增加牌數
 
-        private int _remainingCount;
+        private int _remainingCount;                        //剩餘牌數
         private Random _ran = new Random();
 
         public List<Pai> Board { get; private set; }        //盤面區
         public List<Pai> Selection { get; private set; }    //選擇區
-        public int[] IsOpened { get; private set; }
-        public bool IsExtended { get; private set; }
-        public string GetMessage { get; private set; }
+        public int[] IsOpened { get; private set; }         //是否被點開
+        public bool IsExtended { get; private set; }        //是否已延長
+        public string Message { get; private set; }      //顯示用文字訊息
 
         public Logic() {
             Board = new List<Pai>();
             Selection = new List<Pai>();
             IsOpened = new int[PAI_AMOUNT];
-            IsExtended = false;
-
-            _remainingCount = SELECT_COUNT_INIT;
-            GetMessage = "還有 " + _remainingCount + " 張";
 
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 Board.Add((Pai)i);
                 Selection.Add((Pai)i);
+            }
+            Initialize(true);
+        }
+
+        //遊戲初始化，參數:是否重置盤面
+        public void Initialize(bool initializeBoard) {
+            if (initializeBoard) Board = Shuffle(Board);
+
+            Selection = Shuffle(Selection);
+            IsExtended = false;
+            for (int i = 0; i < PAI_AMOUNT; i++) {
                 IsOpened[i] = 0;
             }
-            Board = Shuffle(Board);
-            Selection = Shuffle(Selection);
+            _remainingCount = SELECT_COUNT_INIT;
+            Message = "還有 " + _remainingCount + " 張";
         }
 
         //洗牌
@@ -57,7 +64,7 @@ namespace MahjongBingo {
             if (_remainingCount == 0) {
                 isGameOver = CheckForGameOver();
             } else {
-                GetMessage = "還有 " + _remainingCount + " 張";
+                Message = "還有 " + _remainingCount + " 張";
             }
             return isGameOver;
         }
@@ -74,15 +81,15 @@ namespace MahjongBingo {
             }
 
             if (bingoCount > 0) {
-                GetMessage = "恭喜你連成 " + bingoCount + " 條線！送妳大娃娃～";
+                Message = "恭喜你連成 " + bingoCount + " 條線！送妳大娃娃～";
                 isGameOver = true;
             } else if (isTenpai && !IsExtended) {
-                GetMessage = "有聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌！";
+                Message = "有聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌！";
                 _remainingCount += SELECT_COUNT_EXTEND;
                 IsExtended = true;
                 isGameOver = false;
             } else {
-                GetMessage = "你GG惹~";
+                Message = "你GG惹~";
                 isGameOver = true;
             }
             return isGameOver;

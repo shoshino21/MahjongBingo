@@ -62,7 +62,7 @@
             this.btnResetGame.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnResetGame.Location = new System.Drawing.Point(407, 75);
             this.btnResetGame.Name = "btnResetGame";
-            this.btnResetGame.Size = new System.Drawing.Size(155, 62);
+            this.btnResetGame.Size = new System.Drawing.Size(172, 62);
             this.btnResetGame.TabIndex = 2;
             this.btnResetGame.Text = "重置遊戲";
             this.btnResetGame.UseVisualStyleBackColor = true;
@@ -71,11 +71,11 @@
             // btnResetBoard
             // 
             this.btnResetBoard.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnResetBoard.Location = new System.Drawing.Point(591, 75);
+            this.btnResetBoard.Location = new System.Drawing.Point(606, 75);
             this.btnResetBoard.Name = "btnResetBoard";
-            this.btnResetBoard.Size = new System.Drawing.Size(155, 62);
+            this.btnResetBoard.Size = new System.Drawing.Size(172, 62);
             this.btnResetBoard.TabIndex = 2;
-            this.btnResetBoard.Text = "重置底盤";
+            this.btnResetBoard.Text = "重置遊戲+底盤";
             this.btnResetBoard.UseVisualStyleBackColor = true;
             this.btnResetBoard.Click += new System.EventHandler(this.btnResetBoard_Click);
             // 

@@ -13,22 +13,22 @@ namespace MahjongBingo {
         private Logic _logic;
         private PictureBox[] _selectionPics;
 
-        public static readonly int PAI_AMOUNT = 36;
-        public static readonly int SELECT_COUNT_INIT = 15;
-        public static readonly int SELECT_COUNT_EXTEND = 5;
-        private readonly int PAI_WIDTH = 36;
+        public static readonly int PAI_AMOUNT = 36;             //總牌數
+        public static readonly int SELECT_COUNT_INIT = 15;      //初始牌數
+        public static readonly int SELECT_COUNT_EXTEND = 5;     //延長後增加牌數
+        private readonly int PAI_WIDTH = 36;                    //牌畫大小
         private readonly int PAI_HEIGHT = 54;
-        private readonly int BOARD_LENGTH_BY_PAI = 6;
-        private readonly int INTERVAL_X = 20;
+        private readonly int BOARD_LENGTH_BY_PAI = 6;           //盤面邊長 = 幾張牌
+        private readonly int INTERVAL_X = 20;                   //牌間隔
         private readonly int INTERVAL_Y = 20;
-        private readonly int MARGIN_LEFT = 20;
+        private readonly int MARGIN_LEFT = 20;                  //盤面和視窗邊緣距離
         private readonly int MARGIN_TOP = 50;
 
         public MainForm() {
             InitializeComponent();
 
             _logic = new Logic();
-            lblMessage.Text = _logic.GetMessage;
+            lblMessage.Text = _logic.Message;
 
             //建立選擇區
             _selectionPics = new PictureBox[PAI_AMOUNT];
@@ -48,10 +48,8 @@ namespace MahjongBingo {
                     for (int idx = 0; idx < PAI_AMOUNT; idx++) {
                         if (_logic.Board[idx] == (Pai)picSelected.Tag && _logic.IsOpened[idx] == 0) {
                             bool isGameOver = _logic.OpenPai(idx);
-                            //更新文字訊息
-                            lblMessage.Text = _logic.GetMessage;
-                            //若遊戲結束則停用選擇區
-                            if (isGameOver) SwitchSelection(false);
+                            lblMessage.Text = _logic.Message;        //更新文字訊息
+                            if (isGameOver) SwitchSelection(false);     //若遊戲結束則停用選擇區
                             break;
                         }
                     }
@@ -71,7 +69,7 @@ namespace MahjongBingo {
                 Graphics g = e.Graphics;
                 DrawBaseLine(g);
                 DrawTenpaiLine(g);
-                DrawPai(g);
+                DrawBoard(g);
                 DrawBingoLine(g);
             }
         }
@@ -144,8 +142,8 @@ namespace MahjongBingo {
             }
         }
 
-        //畫盤面上的牌
-        private void DrawPai(Graphics g) {
+        //畫盤面區
+        private void DrawBoard(Graphics g) {
             Point point = new Point();
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 point.X = (PAI_WIDTH + INTERVAL_X) * (i % BOARD_LENGTH_BY_PAI) + MARGIN_LEFT;
@@ -251,14 +249,27 @@ namespace MahjongBingo {
             }
         }
 
+        //重置遊戲，參數:是否重置盤面
+        private void ResetGame(bool isResetBoard) {
+            _logic.Initialize(isResetBoard);
+
+            for (int i = 0; i < PAI_AMOUNT; i++) {
+                _selectionPics[i].Tag = _logic.Selection[i];
+                _selectionPics[i].Image = Properties.Resources.up1;
+            }
+            SwitchSelection(true);                  //啟用選擇區
+            lblMessage.Text = _logic.Message;    //更新文字訊息
+            Invalidate();                           //重繪盤面
+        }
+
         //重置遊戲鈕
         private void btnResetGame_Click(object sender, EventArgs e) {
-
+            ResetGame(false);
         }
 
         //重置盤面鈕
         private void btnResetBoard_Click(object sender, EventArgs e) {
-
+            ResetGame(true);
         }
     }
 }

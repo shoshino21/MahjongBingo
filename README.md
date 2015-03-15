@@ -11,6 +11,6 @@ Logic.cs : 邏輯相關判斷都在這
 MainForm.cs : 盤面繪製、滑鼠事件都在這  
 Enums.cs : 放一些enum用  
 
-主要收穫是熟悉Graphics的使用，還有怎麼避免畫面閃爍  
+主要收穫是熟悉Graphics的使用，包括怎麼避免畫面閃爍...etc.  
 
 2015.3.16

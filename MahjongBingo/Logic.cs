@@ -11,19 +11,23 @@ namespace MahjongBingo {
         private readonly int SELECT_COUNT_INIT = MainForm.SELECT_COUNT_INIT;
         private readonly int SELECT_COUNT_EXTEND = MainForm.SELECT_COUNT_EXTEND;
 
-        private bool isExtended;
-        private int remainingCount;
-        private Random ran = new Random();
+        private int _remainingCount;
+        private Random _ran = new Random();
 
         public List<Pai> Board { get; private set; }        //盤面區
         public List<Pai> Selection { get; private set; }    //選擇區
         public int[] IsOpened { get; private set; }
+        public bool IsExtended { get; private set; }
+        public string GetMessage { get; private set; }
 
         public Logic() {
             Board = new List<Pai>();
             Selection = new List<Pai>();
             IsOpened = new int[PAI_AMOUNT];
-            remainingCount = SELECT_COUNT_INIT;
+            IsExtended = false;
+
+            _remainingCount = SELECT_COUNT_INIT;
+            GetMessage = "還有 " + _remainingCount + " 張";
 
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 Board.Add((Pai)i);
@@ -38,41 +42,50 @@ namespace MahjongBingo {
         public List<Pai> Shuffle(List<Pai> oldList) {
             List<Pai> newList = new List<Pai>();
             while (oldList.Count > 0) {
-                int idx = ran.Next(oldList.Count);
+                int idx = _ran.Next(oldList.Count);
                 newList.Add(oldList[idx]);
                 oldList.RemoveAt(idx);
             }
             return newList;
         }
 
-        //點開一張牌
-        public void OpenPai(int idx) {
-            if (remainingCount-- > 0) IsOpened[idx] = 1;
-            if (remainingCount == 0) CheckForGameOver();
+        //點開一張牌，回傳遊戲結束與否
+        public bool OpenPai(int idx) {
+            if (_remainingCount-- > 0) IsOpened[idx] = 1;
+
+            bool isGameOver = false;
+            if (_remainingCount == 0) {
+                isGameOver = CheckForGameOver();
+            } else {
+                GetMessage = "還有 " + _remainingCount + " 張";
+            }
+            return isGameOver;
         }
 
-        //確定遊戲結束 or 聽牌延長
-        public void CheckForGameOver() {
-            int bingoCount = 0;     //賓果數
-            bool isTenpai = false;  //是否聽牌
+        //確定遊戲結束 or 聽牌延長，回傳遊戲結束與否
+        public bool CheckForGameOver() {
+            int bingoCount = 0;         //賓果數
+            bool isTenpai = false;      //是否聽牌
+            bool isGameOver = false;    //遊戲是否結束
+
             for (int i = 0; i < 14; i++) {
                 if (CheckForLine((LineType)i) == 6) bingoCount++;
                 if (CheckForLine((LineType)i) == 5) isTenpai = true;
             }
 
-            //TODO:messagebox只是暫用，實做時應該用label呈現, 
-            //而且呈現的code應該放在mainform，必要時應該設個enum
             if (bingoCount > 0) {
-                MessageBox.Show("恭喜你連成 " + bingoCount + " 條線!");
-                //TODO:form gameover處理
-            } else if (isTenpai && !isExtended) {
-                MessageBox.Show("有聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌!");
-                remainingCount += SELECT_COUNT_EXTEND;
-                isExtended = true;
+                GetMessage = "恭喜你連成 " + bingoCount + " 條線！送妳大娃娃～";
+                isGameOver = true;
+            } else if (isTenpai && !IsExtended) {
+                GetMessage = "有聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌！";
+                _remainingCount += SELECT_COUNT_EXTEND;
+                IsExtended = true;
+                isGameOver = false;
             } else {
-                MessageBox.Show("遊戲結束!");
-                //TODO:form gameover處理
+                GetMessage = "你GG惹~";
+                isGameOver = true;
             }
+            return isGameOver;
         }
 
         //檢查某條線中了幾張牌

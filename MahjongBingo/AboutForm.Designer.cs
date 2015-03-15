@@ -60,9 +60,9 @@
             this.label2.Font = new System.Drawing.Font("Verdana", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(276, 84);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(112, 25);
+            this.label2.Size = new System.Drawing.Size(119, 25);
             this.label2.TabIndex = 0;
-            this.label2.Text = "Stephen.J";
+            this.label2.Text = "Stephen. J";
             // 
             // pictureBox1
             // 

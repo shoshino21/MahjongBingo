@@ -8,25 +8,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/*/ 應某人要求寫的麻將賓果 written by shoshino21 2015.3.16 /*/
+/*/ https://github.com/shoshino21/MahjongBingo /*/
+
 namespace MahjongBingo {
     public partial class MainForm : Form {
         private Logic _logic;
         private PictureBox[] _selectionPics;
         private AboutForm _aboutForm;
 
-        public static readonly int PAI_AMOUNT = 36;             //總牌數
-        public static readonly int SELECT_COUNT_INIT = 15;      //初始牌數
-        public static readonly int SELECT_COUNT_EXTEND = 5;     //延長後增加牌數
-        private readonly int PAI_WIDTH = 36;                    //牌畫大小
+        public static readonly int PAI_AMOUNT = 36;                 //總牌數
+        public static readonly int SELECT_COUNT_INIT = 15;          //初始牌數
+        public static readonly int SELECT_COUNT_EXTEND = 5;         //延長後增加牌數
+        private readonly int GAMEOVER_COUNT_FOR_CHANGEDIFF = 3;     //GameOver幾次後開放緩和難度
+        private readonly int CHANGEDIFF_TO = 20;                    //改成幾張牌
+
+        private readonly int BOARD_LENGTH_BY_PAI = 6;               //盤面邊長 = 幾張牌
+        private readonly int PAI_WIDTH = 36;                        //牌畫大小
         private readonly int PAI_HEIGHT = 54;
-        private readonly int BOARD_LENGTH_BY_PAI = 6;           //盤面邊長 = 幾張牌
-        private readonly int INTERVAL_X = 20;                   //牌間隔
+        private readonly int INTERVAL_X = 20;                       //牌間隔
         private readonly int INTERVAL_Y = 20;
-        private readonly int MARGIN_LEFT = 20;                  //盤面和視窗邊緣距離
+        private readonly int MARGIN_LEFT = 20;                      //盤面和視窗邊緣距離
         private readonly int MARGIN_TOP = 50;
 
         public MainForm() {
             InitializeComponent();
+            //設定雙重緩衝，防止重繪畫面時閃爍
+            this.DoubleBuffered = true;
 
             _logic = new Logic();
             _aboutForm = new AboutForm();
@@ -54,8 +62,8 @@ namespace MahjongBingo {
                             lblMessage.Text = _logic.Message;
                             //若遊戲結束則停用選擇區
                             if (isGameOver) SwitchSelection(false);
-                            //若Gameover太多次則顯示調整難度按鈕
-                            if (_logic.GameOverCounter >= 3 && _logic.SelectCountCustom == SELECT_COUNT_INIT) {
+                            //若Gameover太多次則顯示緩和難度按鈕
+                            if (_logic.GameOverCounter >= GAMEOVER_COUNT_FOR_CHANGEDIFF && _logic.CurrentSelectCount == SELECT_COUNT_INIT) {
                                 btnChangeDiff.Visible = true;
                             }
                             break;
@@ -280,11 +288,10 @@ namespace MahjongBingo {
             ResetGame(true);
         }
 
-        //修改難度用
+        //緩和難度用
         private void btnChangeDiff_Click(object sender, EventArgs e) {
-            int customCount = 20;
-            _logic.SelectCountCustom = customCount;
-            MessageBox.Show("給你" + customCount + "張總能過了吧!");
+            _logic.CurrentSelectCount = CHANGEDIFF_TO;
+            MessageBox.Show("給你 " + CHANGEDIFF_TO + " 張總能過了吧！");
 
             ResetGame(false);
             btnChangeDiff.Visible = false;

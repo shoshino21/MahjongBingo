@@ -16,17 +16,17 @@ namespace MahjongBingo {
 
         public List<Pai> Board { get; private set; }        //盤面區
         public List<Pai> Selection { get; private set; }    //選擇區
-        public int[] IsOpened { get; private set; }         //是否被點開
+        public int[] IsOpened { get; private set; }         //牌是否被點開
         public bool IsExtended { get; private set; }        //是否已延長
         public string Message { get; private set; }         //顯示用文字訊息
-        public int GameOverCounter { get; private set; }    //紀錄GameOver次數 (過一定次數show修改難度鈕)
-        public int SelectCountCustom { get; set; }          //自訂牌數
+        public int GameOverCounter { get; private set; }    //紀錄GameOver次數 (過一定次數show緩和難度鈕)
+        public int CurrentSelectCount { get; set; }         //目前牌數設定值
 
         public Logic() {
             Board = new List<Pai>();
             Selection = new List<Pai>();
             IsOpened = new int[PAI_AMOUNT];
-            SelectCountCustom = SELECT_COUNT_INIT;      //牌數先訂為原始設定
+            CurrentSelectCount = SELECT_COUNT_INIT;      //牌數先訂為原始設定
             GameOverCounter = 0;
 
             for (int i = 0; i < PAI_AMOUNT; i++) {
@@ -45,7 +45,7 @@ namespace MahjongBingo {
             for (int i = 0; i < PAI_AMOUNT; i++) {
                 IsOpened[i] = 0;
             }
-            _remainingCount = SelectCountCustom;
+            _remainingCount = CurrentSelectCount;
             Message = "還有 " + _remainingCount + " 張";
         }
 
@@ -88,7 +88,7 @@ namespace MahjongBingo {
                 Message = "恭喜你連成 " + bingoCount + " 條線！送妳大娃娃～";
                 isGameOver = true;
             } else if (isTenpai && !IsExtended) {
-                Message = "有聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌！";
+                Message = "聽牌可多開 " + SELECT_COUNT_EXTEND + " 張牌！";
                 _remainingCount += SELECT_COUNT_EXTEND;
                 IsExtended = true;
                 isGameOver = false;
